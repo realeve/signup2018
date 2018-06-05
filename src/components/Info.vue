@@ -50,6 +50,15 @@ import ChinaAddressV4Data from "./vux_china_address_v4.json";
 import XHeader from "./Header";
 import util from "../js/common";
 import XFooter from "./Footer";
+import idcard from "../js/idcard";
+
+const addressData = ChinaAddressV4Data.filter(
+  item =>
+    ["210000", "310000", "210100", "310100"].includes(item.value) ||
+    ["210100", "310100"].includes(item.parent)
+);
+
+// console.log(addressData);
 
 export default {
   components: {
@@ -69,7 +78,7 @@ export default {
   },
   data() {
     return {
-      addressData: ChinaAddressV4Data,
+      addressData, //: ChinaAddressV4Data,
       toast: {
         show: false,
         text: "",
@@ -100,6 +109,14 @@ export default {
     getName(value) {
       return value2name(value, ChinaAddressV4Data);
     },
+    validateData() {
+      return !(
+        this.user.trim().lenth === 0 ||
+        this.mobile.trim().length === 0 ||
+        this.detail.trim().length === 0 ||
+        this.idcard.trim().length === 0
+      );
+    },
     showToast(settings) {
       this.toast.text = settings.text;
       this.toast.type = settings.type;
@@ -113,6 +130,21 @@ export default {
     // },
     submit() {
       let address = this.getName(this.address).split(" ");
+      if (!idcard.validate(this.idcard).status) {
+        this.showToast({
+          text: "身份证校验失败",
+          type: "warn"
+        });
+        return;
+      }
+      if (!this.validateData()) {
+        this.showToast({
+          text: "数据校验失败",
+          type: "warn"
+        });
+        return;
+      }
+
       let params = {
         user: this.user,
         mobile: this.mobile,
