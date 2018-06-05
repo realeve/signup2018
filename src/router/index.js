@@ -11,36 +11,36 @@ Vue.use(Router);
 
 export default new Router({
   routes: [{
-      path: "/home",
-      component: HomePage
-    },
-    {
+      //   path: "/home",
+      //   component: HomePage
+      // },
+      // {
       path: "/",
       component: Info
     },
-    {
-      path: "/home",
-      component: Home
-    },
-    {
-      path: "/info",
-      component: Info
-    },
-    {
-      path: "/follow",
-      component: Follow
-    },
-    {
-      path: "/score",
-      component: Score
-    },
-    {
-      path: "/message",
-      component: Message
-    },
-    {
-      path: '/lottery',
-      component: Lottery
-    }
+    // {
+    //   path: "/home",
+    //   component: Home
+    // },
+    // {
+    //   path: "/info",
+    //   component: Info
+    // },
+    // {
+    //   path: "/follow",
+    //   component: Follow
+    // },
+    // {
+    //   path: "/score",
+    //   component: Score
+    // },
+    // {
+    //   path: "/message",
+    //   component: Message
+    // },
+    // {
+    //   path: '/lottery',
+    //   component: Lottery
+    // }
   ]
 });
