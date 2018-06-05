@@ -4,7 +4,8 @@
     <template v-if="!hasUserInfo">
       <div class="content">
         <p class="info">个人信息</p>
-        <p class="desc">请勿必填写本人身份证号码，正式入厂参观需携带身份证原件，并以报名时预留的身份证号为准</p>
+        <p class="desc" style="text-align:center;">报名人数：{{curPeople}}</p>
+        <p class="desc">请勿必填写本人身份证号码，正式入厂参观需携带身份证原件，并以报名时预留的身份证号为准。</p>
       </div>
       <group label-width="4.5em" label-margin-right="2em" label-align="right">
         <x-input title="姓名" v-model="user" placeholder="请填写收件人姓名" :required="true" :show-clear="true"></x-input>
@@ -12,7 +13,6 @@
         <x-input title="身份证" v-model="idcard" :show-clear="true" :required="true" placeholder="请输入身份证号"></x-input>
         <x-address title="地址选择" v-model="address" raw-value :list="addressData" :required="true" value-text-align="left"></x-address>
         <x-textarea title="详细地址" placeholder="请填写详细地址" v-model="detail" :required="true" :show-counter="false" :show-clear="true" :rows="3"></x-textarea>
-
       </group>
     </template>
     <msg v-else :title="msg.title" :description="msg.desc" :icon="msg.icon"></msg>
@@ -20,7 +20,7 @@
 
     <div class="submit">
       <x-button v-show="!hasUserInfo" @click.native="submit" type="primary">提交数据</x-button>
-      <x-button v-show="showError" type="warn" @click.native="reback">我要反馈</x-button>
+      <!-- <x-button v-show="showError" type="warn" @click.native="reback">我要反馈</x-button> -->
       <!-- <x-button @click.native="jump" type="default">查看票数</x-button> -->
     </div>
 
@@ -75,6 +75,7 @@ export default {
         text: "",
         type: ""
       },
+      curPeople: "",
       user: "",
       mobile: "",
       detail: "",
@@ -107,9 +108,9 @@ export default {
         this.toast.show = false;
       }, 1500);
     },
-    reback() {
-      window.location.href = "http://mp.weixin.qq.com/s/vFPSwUi1RxD1FJJqTzK93w";
-    },
+    // reback() {
+    //   window.location.href = "http://mp.weixin.qq.com/s/vFPSwUi1RxD1FJJqTzK93w";
+    // },
     submit() {
       let address = this.getName(this.address).split(" ");
       let params = {
@@ -121,10 +122,11 @@ export default {
         detail: this.detail,
         openid: this.openid,
         rec_time: util.getNow(),
-        idcard: this.idcard
+        idcard: this.idcard,
+        sid: this.$store.state.sport.id
       };
 
-      let url = this.$store.state.cdnUrl + "?s=/addon/Api/Api/setUserInfo";
+      let url = this.$store.state.cdnUrl + "?s=/addon/Api/Api/setSignUpInfo";
       this.$http
         .jsonp(url, {
           params
@@ -143,8 +145,20 @@ export default {
             text: "提交成功",
             type: "success"
           });
-          this.msg.title = "个人信息提交成功";
+
           this.msg.desc = "感谢你的参与";
+          this.$http
+            .jsonp(
+              this.$store.state.cdnUrl +
+                "?s=/addon/Api/Api/getSignupCount&sid=" +
+                this.$store.state.sport.id
+            )
+            .then(res => {
+              this.msg.desc =
+                "感谢你的参与,当前已有 " + res.data[0].num + " 人报名.";
+            });
+
+          this.msg.title = "个人信息提交成功";
           this.msg.icon = "success";
 
           this.hasUserInfo = true;
@@ -166,7 +180,7 @@ export default {
     getStep() {
       let url = this.$store.state.cdnUrl;
       let params = {
-        s: "/addon/Api/Api/isSetUserInfo",
+        s: "/addon/Api/Api/isSetSignupInfo",
         openid: this.openid,
         sid: this.$store.state.sport.id
       };
@@ -175,19 +189,30 @@ export default {
           params
         })
         .then(res => {
-          var data = res.data;
-          this.showScore = data.status == 2;
-          if (data.status == 0) {
+          const { data, status } = res.data;
+          // this.showScore = data.status == 2;
+          if (status == 0) {
             this.$router.push("/home");
             return;
           }
-          this.user = data.user;
-          this.mobile = data.mobile;
-          this.detail = data.detail;
-          this.address = [data.prov, data.city, data.area];
+          this.user = data[0].user;
+          this.mobile = data[0].mobile;
+          this.detail = data[0].detail;
+          this.address = [data[0].prov, data[0].city, data[0].area];
+          this.idcard = data[0].idcard;
         })
         .catch(e => {
           console.log(e);
+        });
+
+      this.$http
+        .jsonp(
+          this.$store.state.cdnUrl +
+            "?s=/addon/Api/Api/getSignupCount&sid=" +
+            this.$store.state.sport.id
+        )
+        .then(res => {
+          this.curPeople = res.data[0].num;
         });
     },
     jump() {
