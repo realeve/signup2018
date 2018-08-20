@@ -105,6 +105,11 @@ export default {
       return this.$store.state.userInfo.openid;
     }
   },
+  watch: {
+    openid() {
+      this.getStep();
+    }
+  },
   methods: {
     getName(value) {
       return value2name(value, ChinaAddressV4Data);
@@ -210,6 +215,9 @@ export default {
         });
     },
     getStep() {
+      if (typeof this.openid == "undefined" || this.openid == "") {
+        return;
+      }
       let url = this.$store.state.cdnUrl;
       let params = {
         s: "/addon/Api/Api/isSetSignupInfo",
