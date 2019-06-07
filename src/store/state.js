@@ -18,7 +18,7 @@ let isMobile = () => {
 const state = {
   isLoading: false,
   userInfo: {},
-  cdnUrl: 'http://cbpc540.applinzi.com/index.php',
+  cdnUrl: '//api.cbpc.ltd/',
   tips: '',
   isDebug: process.env.NODE_ENV !== 'production',
   isPC: !isMobile(),
