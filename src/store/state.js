@@ -18,21 +18,20 @@ let isMobile = () => {
 const state = {
   isLoading: false,
   userInfo: {},
-  cdnUrl: "http://cbpc540.applinzi.com/index.php",
-  tips: "",
-  isDebug: process.env.NODE_ENV !== "production",
+  cdnUrl: 'http://cbpc540.applinzi.com/index.php',
+  tips: '',
+  isDebug: process.env.NODE_ENV !== 'production',
   isPC: !isMobile(),
   sport: {
-    // encodeURI('2017年行业"十件大事"').replace(/%/g,'')
-    salt: "2017E5B9B4E8A18CE4B89A22E58D81E4BBB6E5A4A7E4BA8B22",
+    salt: '2017E5B9B4E8A18CE4B89A22E58D81E4BBB6E5A4A7E4BA8B22',
     id: 1,
     isLogin: true,
-    name: "中钞造币节",
+    name: '中钞造币节',
     maxTickets: 20,
     allTickets: 40,
     loadWXInfo: true,
-    startDate: "2018-06-04",
-    endDate: "2018-06-10"
+    startDate: '2018-06-04',
+    endDate: '2018-06-10'
   }
 };
 

@@ -4,27 +4,80 @@
     <template v-if="!hasUserInfo">
       <div class="content">
         <p class="info">个人信息</p>
-        <p class="desc" style="text-align:center;">报名人数：{{curPeople}}</p>
+        <p
+          class="desc"
+          style="text-align:center;"
+        >报名人数：{{curPeople}}</p>
         <p class="desc">请勿必填写本人身份证号码，正式入厂参观需携带身份证原件，并以报名时预留的身份证号为准。</p>
       </div>
-      <group label-width="4.5em" label-margin-right="2em" label-align="right">
-        <x-input title="姓名" v-model="user" placeholder="请填写收件人姓名" :required="true" :show-clear="true"></x-input>
-        <x-input title="手机号" is-type="china-mobile" v-model="mobile" :show-clear="true" :required="true" placeholder="请输入手机号"></x-input>
-        <x-input title="身份证" v-model="idcard" :show-clear="true" :required="true" placeholder="请输入身份证号"></x-input>
-        <x-address title="地址选择" v-model="address" raw-value :list="addressData" :required="true" value-text-align="left"></x-address>
-        <x-textarea title="详细地址" placeholder="请填写详细地址" v-model="detail" :required="true" :show-counter="false" :show-clear="true" :rows="3"></x-textarea>
+      <group
+        label-width="4.5em"
+        label-margin-right="2em"
+        label-align="right"
+      >
+        <x-input
+          title="姓名"
+          v-model="user"
+          placeholder="请填写收件人姓名"
+          :required="true"
+          :show-clear="true"
+        ></x-input>
+        <x-input
+          title="手机号"
+          is-type="china-mobile"
+          v-model="mobile"
+          :show-clear="true"
+          :required="true"
+          placeholder="请输入手机号"
+        ></x-input>
+        <x-input
+          title="身份证"
+          v-model="idcard"
+          :show-clear="true"
+          :required="true"
+          placeholder="请输入身份证号"
+        ></x-input>
+        <x-address
+          title="地址选择"
+          v-model="address"
+          raw-value
+          :list="addressData"
+          :required="true"
+          value-text-align="left"
+        ></x-address>
+        <x-textarea
+          title="详细地址"
+          placeholder="请填写详细地址"
+          v-model="detail"
+          :required="true"
+          :show-counter="false"
+          :show-clear="true"
+          :rows="3"
+        ></x-textarea>
       </group>
     </template>
-    <msg v-else :title="msg.title" :description="msg.desc" :icon="msg.icon"></msg>
-    <toast v-model="toast.show" :type="toast.type">{{toast.text}}</toast>
+    <msg
+      v-else
+      :title="msg.title"
+      :description="msg.desc"
+      :icon="msg.icon"
+    ></msg>
+    <toast
+      v-model="toast.show"
+      :type="toast.type"
+    >{{toast.text}}</toast>
 
     <div class="submit">
-      <x-button v-show="!hasUserInfo" @click.native="submit" type="primary">提交数据</x-button>
+      <x-button
+        v-show="!hasUserInfo"
+        @click.native="submit"
+        type="primary"
+      >提交数据</x-button>
       <!-- <x-button v-show="showError" type="warn" @click.native="reback">我要反馈</x-button> -->
       <!-- <x-button @click.native="jump" type="default">查看票数</x-button> -->
     </div>
 
-    <x-footer/>
+    <x-footer />
   </div>
 </template>
 
@@ -35,7 +88,6 @@ import {
   Toast,
   XTextarea,
   XAddress,
-  // ChinaAddressV4Data,
   XButton,
   Group,
   Cell,
@@ -47,18 +99,16 @@ import {
 
 import ChinaAddressV4Data from "./vux_china_address_v4.json";
 
-import XHeader from "./Header";
 import util from "../js/common";
 import XFooter from "./Footer";
 import idcard from "../js/idcard";
+import * as db from "../js/db";
 
 const addressData = ChinaAddressV4Data.filter(
   item =>
     ["210000", "310000", "210100", "310100"].includes(item.value) ||
     ["210100", "310100"].includes(item.parent)
 );
-
-// console.log(addressData);
 
 export default {
   components: {
@@ -71,14 +121,13 @@ export default {
     XInput,
     PopupPicker,
     Picker,
-    XHeader,
     XFooter,
     Msg,
     Divider
   },
   data() {
     return {
-      addressData, //: ChinaAddressV4Data,
+      addressData,
       toast: {
         show: false,
         text: "",
