@@ -7,13 +7,9 @@
 
 <script>
 import { Loading } from "vux";
-
-import { querystring } from "vux";
-
+import qs from "qs";
 import { mapState } from "vuex";
-
 import { axios, host } from "./js/axios";
-
 export default {
   name: "app",
   components: {
@@ -106,7 +102,7 @@ export default {
           title: this.title, // 分享标题
           desc: this.title,
           link: this.shareUrl,
-          imgUrl: "http://cbpm.sinaapp.com/cdn/logo/cbpm.jpg",
+          imgUrl: "http://www.cbpc.ltd/public/cdn/cbpm.jpg",
           type: "",
           dataUrl: "",
           success: function() {},
@@ -173,7 +169,7 @@ export default {
         window.location.href = this.redirectUrl;
         return true;
       }
-      let params = querystring.parse(hrefArr[1]);
+      let params = qs.parse(hrefArr[1]);
       this.code = params.code;
       return false;
     }

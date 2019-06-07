@@ -1,5 +1,8 @@
 <template>
-  <footer :style="{color}" :class="{bg:showBg}">
+  <footer
+    :style="{color}"
+    :class="{bg:showBg}"
+  >
     {{year}} &copy; 中国印钞造币总公司
   </footer>
 </template>
@@ -18,9 +21,7 @@ footer {
   align-items: center;
   justify-content: center;
   width: 100%;
-
-  position: absolute;
-  bottom: 0;
+  margin-top: 100px;
 }
 </style>
 <script>

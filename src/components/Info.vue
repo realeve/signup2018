@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <x-header></x-header> -->
     <template v-if="!hasUserInfo">
       <div class="content">
         <p class="info">个人信息</p>
@@ -18,7 +17,7 @@
         <x-input
           title="姓名"
           v-model="user"
-          placeholder="请填写收件人姓名"
+          placeholder="请填写参观人姓名"
           :required="true"
           :show-clear="true"
         ></x-input>
@@ -37,8 +36,13 @@
           :required="true"
           placeholder="请输入身份证号"
         ></x-input>
+        <selector
+          title="参观单位"
+          :options="depts"
+          v-model="dept"
+        ></selector>
         <x-address
-          title="地址选择"
+          title="地区"
           v-model="address"
           raw-value
           :list="addressData"
@@ -90,6 +94,7 @@ import {
   Group,
   Cell,
   XInput,
+  Selector,
   PopupPicker,
   Picker,
   Value2nameFilter as value2name
@@ -121,7 +126,8 @@ export default {
     Picker,
     XFooter,
     Msg,
-    Divider
+    Divider,
+    Selector
   },
   data() {
     return {
@@ -137,9 +143,11 @@ export default {
       detail: "",
       idcard: "",
       address: ["辽宁省", "沈阳市", "和平区"],
+      depts: [{ key: "沈币", value: "沈币" }, { key: "上币", value: "上币" }],
       showScore: false,
       hasUserInfo: false,
       showError: false,
+      dept: "",
       msg: {
         title: "个人信息提交成功",
         desc: "感谢你的参与",
@@ -204,7 +212,8 @@ export default {
         openid: this.openid,
         rec_time: util.getNow(),
         idcard: this.idcard,
-        sid: this.$store.state.sport.id
+        sid: this.$store.state.sport.id,
+        dept: this.dept
       };
 
       let { data, rows } = await db.addCbpmSignup613(params).catch(e => {
@@ -219,11 +228,12 @@ export default {
         this.msg.desc =
           '请复制以下信息并<a href="http://mp.weixin.qq.com/s/vFPSwUi1RxD1FJJqTzK93w">点击此处提交至后台小编</a>：<br><br>' +
           JSON.stringify(params);
+        return { data: [{ affected_rows: 0 }] };
       });
 
       if (data[0].affected_rows == 0) {
         this.showToast({
-          text: "数据失败",
+          text: "提交失败",
           type: "warn"
         });
         return;
@@ -254,9 +264,9 @@ export default {
         data: [data]
       } = await db.getCbpmSignup613ByOpenid(this.openid);
       if (rows == 0) {
-        this.$router.push("/home");
         return;
       }
+      this.dept = data.dept;
       this.user = data.user;
       this.mobile = data.mobile;
       this.detail = data.detail;
