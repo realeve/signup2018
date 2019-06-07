@@ -23,22 +23,6 @@ export const codeMessage = {
   504: '网关超时。'
 };
 
-export const _commonData = {
-  rows: 1,
-  data: [{ affected_rows: 1, id: Math.ceil(Math.random() * 100) }],
-  time: 20,
-  ip: '127.0.0.1',
-  title: '数据更新/插入/删除返回值'
-};
-
-// 导出数据，随机时长
-export const mock = (path, time = Math.random() * 2000) =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(typeof path === 'string' ? require(path) : path);
-    }, time);
-  });
-
 // 判断数据类型，对于FormData使用 typeof 方法会得到 object;
 let getType = function(data) {
   return Object.prototype.toString

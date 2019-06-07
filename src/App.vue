@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <loading v-model="isLoading" />
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -11,6 +11,9 @@ import { Loading } from "vux";
 import { querystring } from "vux";
 
 import { mapState } from "vuex";
+
+import * as db from "./js/db";
+
 export default {
   name: "app",
   components: {

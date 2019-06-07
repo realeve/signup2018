@@ -73,8 +73,6 @@
         @click.native="submit"
         type="primary"
       >提交数据</x-button>
-      <!-- <x-button v-show="showError" type="warn" @click.native="reback">我要反馈</x-button> -->
-      <!-- <x-button @click.native="jump" type="default">查看票数</x-button> -->
     </div>
 
     <x-footer />
@@ -138,7 +136,7 @@ export default {
       mobile: "",
       detail: "",
       idcard: "",
-      address: ["北京市", "市辖区", "东城区"],
+      address: ["辽宁省", "沈阳市", "和平区"],
       showScore: false,
       hasUserInfo: false,
       showError: false,
@@ -179,10 +177,7 @@ export default {
         this.toast.show = false;
       }, 1500);
     },
-    // reback() {
-    //   window.location.href = "http://mp.weixin.qq.com/s/vFPSwUi1RxD1FJJqTzK93w";
-    // },
-    submit() {
+    async submit() {
       let address = this.getName(this.address).split(" ");
       if (!idcard.validate(this.idcard).status) {
         this.showToast({
@@ -212,100 +207,67 @@ export default {
         sid: this.$store.state.sport.id
       };
 
-      let url = this.$store.state.cdnUrl + "?s=/addon/Api/Api/setSignUpInfo";
-      this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(res => {
-          if (!res.ok) {
-            this.showToast({
-              text: "数据失败",
-              type: "warn"
-            });
-            return;
-          }
-          var data = res.data;
+      let { data, rows } = await db.addCbpmSignup613(params).catch(e => {
+        this.hasUserInfo = true;
+        this.msg.title = "糟糕了，信息提交失败";
+        this.msg.icon = "warn";
+        Reflect.deleteProperty(params, "callback");
 
-          this.showToast({
-            text: "提交成功",
-            type: "success"
-          });
+        params.status = e.status;
+        params.statusText = e.statusText;
+        this.showError = true;
+        this.msg.desc =
+          '请复制以下信息并<a href="http://mp.weixin.qq.com/s/vFPSwUi1RxD1FJJqTzK93w">点击此处提交至后台小编</a>：<br><br>' +
+          JSON.stringify(params);
+      });
 
-          this.msg.desc = "感谢你的参与";
-          this.$http
-            .jsonp(
-              this.$store.state.cdnUrl +
-                "?s=/addon/Api/Api/getSignupCount&sid=" +
-                this.$store.state.sport.id
-            )
-            .then(res => {
-              this.msg.desc =
-                "感谢你的参与,当前已有 " + res.data[0].num + " 人报名.";
-            });
-
-          this.msg.title = "个人信息提交成功";
-          this.msg.icon = "success";
-
-          this.hasUserInfo = true;
-        })
-        .catch(e => {
-          this.hasUserInfo = true;
-          this.msg.title = "糟糕了，信息提交失败";
-          this.msg.icon = "warn";
-          Reflect.deleteProperty(params, "callback");
-
-          params.status = e.status;
-          params.statusText = e.statusText;
-          this.showError = true;
-          this.msg.desc =
-            '请复制以下信息并<a href="http://mp.weixin.qq.com/s/vFPSwUi1RxD1FJJqTzK93w">点击此处提交至后台小编</a>：<br><br>' +
-            JSON.stringify(params);
+      if (data[0].affected_rows == 0) {
+        this.showToast({
+          text: "数据失败",
+          type: "warn"
         });
+        return;
+      }
+      this.showToast({
+        text: "提交成功",
+        type: "success"
+      });
+
+      this.msg.desc = "感谢你的参与";
+
+      let {
+        data: [{ num }]
+      } = await db.getCbpmSignup613();
+      this.curPeople = num;
+      this.msg.desc = "感谢你的参与,当前已有 " + num + " 人报名.";
+      this.msg.title = "个人信息提交成功";
+      this.msg.icon = "success";
+      this.hasUserInfo = true;
     },
-    getStep() {
+    async getStep() {
       if (typeof this.openid == "undefined" || this.openid == "") {
         return;
       }
-      let url = this.$store.state.cdnUrl;
-      let params = {
-        s: "/addon/Api/Api/isSetSignupInfo",
-        openid: this.openid,
-        sid: this.$store.state.sport.id
-      };
-      this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(res => {
-          const { data, status } = res.data;
-          // this.showScore = data.status == 2;
-          if (status == 0) {
-            this.$router.push("/home");
-            return;
-          }
-          this.user = data[0].user;
-          this.mobile = data[0].mobile;
-          this.detail = data[0].detail;
-          this.address = [data[0].prov, data[0].city, data[0].area];
-          this.idcard = data[0].idcard;
-        })
-        .catch(e => {
-          console.log(e);
-        });
 
-      this.$http
-        .jsonp(
-          this.$store.state.cdnUrl +
-            "?s=/addon/Api/Api/getSignupCount&sid=" +
-            this.$store.state.sport.id
-        )
-        .then(res => {
-          this.curPeople = res.data[0].num;
-        });
-    },
-    jump() {
-      this.$router.push("/score");
+      let {
+        rows,
+        data: [data]
+      } = await db.getCbpmSignup613ByOpenid(this.openid);
+      if (rows == 0) {
+        this.$router.push("/home");
+        return;
+      }
+      this.user = data.user;
+      this.mobile = data.mobile;
+      this.detail = data.detail;
+      this.address = [data.prov, data.city, data.area];
+      this.idcard = data.idcard;
+
+      let {
+        data: [{ num }]
+      } = await db.getCbpmSignup613();
+
+      this.curPeople = num;
     }
   },
   created() {
