@@ -7,7 +7,7 @@
           class="desc"
           style="text-align:center;"
         >报名人数：{{curPeople}}</p>
-        <p class="desc">请勿必填写本人身份证号码，正式入厂参观需携带身份证原件，并以报名时预留的身份证号为准。</p>
+        <p class="desc">请务必填写本人身份证号码，正式入厂参观需携带身份证原件，并以报名时预留的身份证号为准。</p>
       </div>
       <group
         label-width="4.5em"
