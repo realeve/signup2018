@@ -109,8 +109,9 @@ import * as db from "../js/db";
 
 const addressData = ChinaAddressV4Data.filter(
   item =>
-    ["210000", "310000", "210100", "310100"].includes(item.value) ||
-    ["210100", "310100"].includes(item.parent)
+    ["210000", "310000", "210100", "310100", "320000", "320100"].includes(
+      item.value
+    ) || ["210100", "310100", "320100"].includes(item.parent)
 );
 
 export default {
@@ -143,11 +144,15 @@ export default {
       detail: "",
       idcard: "",
       address: ["辽宁省", "沈阳市", "和平区"],
-      depts: [{ key: "沈币", value: "沈币" }, { key: "上币", value: "上币" }],
+      depts: [
+        { key: "南币", value: "南币" },
+        { key: "沈币", value: "沈币" },
+        { key: "上币", value: "上币" }
+      ],
       showScore: false,
       hasUserInfo: false,
       showError: false,
-      dept: "",
+      dept: "南币",
       msg: {
         title: "个人信息提交成功",
         desc: "感谢你的参与",
